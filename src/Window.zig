@@ -240,6 +240,8 @@ pub fn setCursorShape(self: Window, shape: Cell.CursorShape) void {
 pub const PrintOptions = struct {
     /// vertical offset to start printing at
     row_offset: usize = 0,
+    /// horizontal offset to start printing at
+    column_offset: usize = 0,
 
     /// wrap behavior for printing
     wrap: enum {
@@ -265,11 +267,11 @@ pub const PrintResult = struct {
 
 /// prints segments to the window. returns true if the text overflowed with the
 /// given wrap strategy and size.
-pub fn print(self: Window, segments: []Segment, opts: PrintOptions) !PrintResult {
+pub fn print(self: Window, segments: []const Segment, opts: PrintOptions) !PrintResult {
     var row = opts.row_offset;
     switch (opts.wrap) {
         .grapheme => {
-            var col: usize = 0;
+            var col: usize = opts.column_offset;
             const overflow: bool = blk: for (segments) |segment| {
                 var iter = GraphemeIterator.init(segment.text);
                 while (iter.next()) |grapheme| {
@@ -305,7 +307,7 @@ pub fn print(self: Window, segments: []Segment, opts: PrintOptions) !PrintResult
             };
         },
         .word => {
-            var col: usize = 0;
+            var col: usize = opts.column_offset;
             var overflow: bool = false;
             var soft_wrapped: bool = false;
             for (segments) |segment| {
@@ -404,7 +406,7 @@ pub fn print(self: Window, segments: []Segment, opts: PrintOptions) !PrintResult
             };
         },
         .none => {
-            var col: usize = 0;
+            var col: usize = opts.column_offset;
             const overflow: bool = blk: for (segments) |segment| {
                 var iter = GraphemeIterator.init(segment.text);
                 while (iter.next()) |grapheme| {
