@@ -195,6 +195,9 @@ pub fn writeCell(self: Window, col: usize, row: usize, cell: Cell) void {
     if (self.height <= row or self.width <= col) return;
     self.screen.writeCell(col + self.x_off, row + self.y_off, cell);
 }
+pub fn readCell(self: Window, col: usize, row: usize) ?Cell {
+    return self.screen.readCell(col + self.x_off, row + self.y_off);
+}
 
 /// fills the window with the default cell
 pub fn clear(self: Window) void {
